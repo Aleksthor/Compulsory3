@@ -39,8 +39,17 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UPawnMovementComponent* MovementComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	UHoverSceneComponent* HoverComponent1;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	UHoverSceneComponent* HoverComponent2;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	UHoverSceneComponent* HoverComponent3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	UHoverSceneComponent* HoverComponent4;
 	/** Bullets not active in project yet */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerVariables")
 	TSubclassOf<ABullet> BulletBP;

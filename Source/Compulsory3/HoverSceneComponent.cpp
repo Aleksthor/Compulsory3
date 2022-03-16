@@ -15,7 +15,7 @@ UHoverSceneComponent::UHoverSceneComponent()
 
 	// ...
 	TraceLength = 200.f;
-	HoverForce = 30000.f;
+	HoverForce = 50000.f;
 	LinearDamping = 3.f;
 	AngularDamping = 5.f;
 }
@@ -47,13 +47,12 @@ void UHoverSceneComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		UpVector *= TraceLength;
 		FVector EndLocation = WorldLocation - UpVector;
 
-		FHitResult HitResult;
+		HitResult;
 		FCollisionQueryParams TraceParams;
 		GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, EndLocation, ECC_Visibility, TraceParams);
 
 		if (HitResult.IsValidBlockingHit())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Valid Hit"));
 			FVector Length = HitResult.Location - WorldLocation;
 			float LengthSize = Length.Size();
 			float Ratio = LengthSize / TraceLength;
@@ -70,6 +69,8 @@ void UHoverSceneComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		}
 		
 	}
+
+	//UE_LOG(LogTemp, Error, TEXT("Impact Point: %s"), *HitResult.ImpactPoint.ToString());
 
 }
 

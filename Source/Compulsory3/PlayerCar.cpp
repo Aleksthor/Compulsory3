@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Bullet.h"
+#include "HoverSceneComponent.h"
 
 
 
@@ -47,6 +48,21 @@ APlayerCar::APlayerCar()
 	MovementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(TEXT("MovementComponent"));
 	MovementComponent->UpdatedComponent = Collider;
 	
+	HoverComponent1 = CreateDefaultSubobject<UHoverSceneComponent>(TEXT("HoverComponent1"));
+	HoverComponent1->SetupAttachment(Collider);
+	HoverComponent1->SetRelativeLocation(FVector(60.f, 60.f, 0.f));
+
+	HoverComponent2 = CreateDefaultSubobject<UHoverSceneComponent>(TEXT("HoverComponent2"));
+	HoverComponent2->SetupAttachment(Collider);
+	HoverComponent2->SetRelativeLocation(FVector(60.f, -60.f, 0.f));
+
+	HoverComponent3 = CreateDefaultSubobject<UHoverSceneComponent>(TEXT("HoverComponent3"));
+	HoverComponent3->SetupAttachment(Collider);
+	HoverComponent3->SetRelativeLocation(FVector(-60.f, 60.f, 0.f));
+
+	HoverComponent4 = CreateDefaultSubobject<UHoverSceneComponent>(TEXT("HoverComponent4"));
+	HoverComponent4->SetupAttachment(Collider);
+	HoverComponent4->SetRelativeLocation(FVector(-60.f, -60.f, 0.f));
 
 	/** Attaching Camera to the SpringArm*/
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -82,16 +98,16 @@ void APlayerCar::Tick(float DeltaTime)
 	{
 		PawnRotation = GetActorRotation();
 		FRotator Yaw = FMath::RInterpTo(PawnRotation, ControlRotation, DeltaTime, 5.f);
-		if (MovementComponent->IsFalling())
+		FRotator UseRotator = PawnRotation;
+
+		FVector ImpactPoints = HoverComponent1->HitResult.ImpactPoint;
+		if (ImpactPoints.IsNearlyZero())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Falling"));
-			FRotator PitchRoll = FMath::RInterpTo(PawnRotation, FRotator::ZeroRotator, DeltaTime, 5.f);
-			SetActorRotation(FRotator(PitchRoll.Pitch, Yaw.Yaw, PitchRoll.Roll));
+			UE_LOG(LogTemp, Warning, TEXT("Logging In Air"));
+			UseRotator = FMath::RInterpTo(PawnRotation, FRotator::ZeroRotator, DeltaTime, 5.f);
 		}
-		else
-		{
-			SetActorRotation(FRotator(PawnRotation.Pitch, Yaw.Yaw, PawnRotation.Roll));
-		}
+		SetActorRotation(FRotator(UseRotator.Pitch, Yaw.Yaw, UseRotator.Roll));
+		
 		
 		
 	

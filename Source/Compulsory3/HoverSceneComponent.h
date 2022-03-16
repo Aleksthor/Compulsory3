@@ -12,6 +12,7 @@ class COMPULSORY3_API UHoverSceneComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditAnywhere, Category = "HoverVariables")
 	float TraceLength;
 
@@ -23,6 +24,9 @@ class COMPULSORY3_API UHoverSceneComponent : public USceneComponent
 
 	UPROPERTY(EditAnywhere, Category = "HoverVariables")
 	float AngularDamping;
+
+	UPROPERTY(EditAnywhere, Category = "HoverVariables")
+	FHitResult HitResult;
 
 public:	
 	// Sets default values for this component's properties
