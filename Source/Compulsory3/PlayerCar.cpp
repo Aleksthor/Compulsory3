@@ -12,6 +12,8 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Bullet.h"
 
+
+
 // Sets default values
 APlayerCar::APlayerCar()
 {
@@ -22,8 +24,6 @@ APlayerCar::APlayerCar()
 	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	SetRootComponent(Collider);
 	Collider->SetSimulatePhysics(true);
-	Collider->SetEnableGravity(false);
-	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Collider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCar::OnOverlap);
 	
 
@@ -46,9 +46,13 @@ APlayerCar::APlayerCar()
 	/** Movement Component Default Values*/
 	MovementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(TEXT("MovementComponent"));
 	MovementComponent->UpdatedComponent = Collider;
+	
 
+	/** Attaching Camera to the SpringArm*/
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
@@ -59,7 +63,9 @@ APlayerCar::APlayerCar()
 void APlayerCar::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
+
 }
 
 // Called every frame
@@ -67,11 +73,30 @@ void APlayerCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
 	PawnRotation = GetActorRotation();
-	FRotator Yaw = FMath::RInterpTo(PawnRotation, GetControlRotation(), DeltaTime, 5.f);
+	ControlRotation = GetControlRotation();
+
+
+
+	if (!MovementComponent->Velocity.IsNearlyZero())
+	{
+		PawnRotation = GetActorRotation();
+		FRotator Yaw = FMath::RInterpTo(PawnRotation, ControlRotation, DeltaTime, 5.f);
+		if (MovementComponent->IsFalling())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Falling"));
+			FRotator PitchRoll = FMath::RInterpTo(PawnRotation, FRotator::ZeroRotator, DeltaTime, 5.f);
+			SetActorRotation(FRotator(PitchRoll.Pitch, Yaw.Yaw, PitchRoll.Roll));
+		}
+		else
+		{
+			SetActorRotation(FRotator(PawnRotation.Pitch, Yaw.Yaw, PawnRotation.Roll));
+		}
+		
+		
 	
-	SetActorRotation(FRotator(0.f, Yaw.Yaw, 0.f));
+	}
+
 
 	if (bShooting)
 	{
@@ -119,12 +144,11 @@ void APlayerCar::Shoot()
 	UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), Ammo);
 	if (Ammo > 0)
 	{
-		FRotator ActorRotation = Collider->GetComponentRotation();
-		GetWorld()->SpawnActor<ABullet>(BulletBP, GetActorLocation() + GetActorForwardVector() * 100.f + GetActorRightVector() * 100.f, FRotator(0.f, ActorRotation.Yaw, 0.f) - FRotator(0.f, 1.f, 0.f));
+		GetWorld()->SpawnActor<ABullet>(BulletBP, GetActorLocation() + GetActorForwardVector() * 100.f + GetActorRightVector() * 100.f, FRotator(0.f, PawnRotation.Yaw, 0.f) - FRotator(0.f, 1.f, 0.f));
 		Ammo--;
 		if (Ammo > 0)
 		{
-			GetWorld()->SpawnActor<ABullet>(BulletBP, GetActorLocation() + GetActorForwardVector() * 100.f - GetActorRightVector() * 100.f, FRotator(0.f, ActorRotation.Yaw, 0.f) + FRotator(0.f, 1.f, 0.f));
+			GetWorld()->SpawnActor<ABullet>(BulletBP, GetActorLocation() + GetActorForwardVector() * 100.f - GetActorRightVector() * 100.f, FRotator(0.f, PawnRotation.Yaw, 0.f) + FRotator(0.f, 1.f, 0.f));
 			Ammo--;
 		}
 		
@@ -145,9 +169,10 @@ void APlayerCar::StopShooting()
 void APlayerCar::Forward(float value)
 {
 	//New for MovementComponent******************************
-	FRotator ControllerRotation = GetControlRotation();
-	FVector RotationVector = FRotationMatrix(ControllerRotation).GetUnitAxis(EAxis::X);
+	FVector RotationVector = FRotationMatrix(ControlRotation).GetUnitAxis(EAxis::X);
 	FVector Direction = FVector(RotationVector.X, RotationVector.Y, 0.f);
+
+
 
 	AddMovementInput(Direction, value);
 }

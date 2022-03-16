@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+class ABullet;
+
 UCLASS()
 class COMPULSORY3_API AEnemy : public ACharacter
 {
@@ -46,9 +48,20 @@ public:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
+	/** Bullets not active in project yet */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerVariables")
+	TSubclassOf<ABullet> BulletBP;
+
+	bool bShooting = false;
+
+
 
 	/** Variables */
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AI)
-	float Health = 100.f;
+	float Health = 100.f;	
+
+	float ShootTimer = 1.f;
+
+	float ShootClock = 0.f;
 };

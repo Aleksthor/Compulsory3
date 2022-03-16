@@ -7,6 +7,7 @@
 #include "PlayerCar.generated.h"
 
 class ABullet; 
+class UHoverSceneComponent;
 
 UCLASS()
 class COMPULSORY3_API APlayerCar : public APawn
@@ -38,6 +39,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UPawnMovementComponent* MovementComponent;
 
+
+
 	/** Bullets not active in project yet */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "PlayerVariables")
 	TSubclassOf<ABullet> BulletBP;
@@ -66,9 +69,13 @@ public:
 	// Start to shoot right away the first shot
 	float ShootClock = 1.f;
 
-	// Save Rotation Every Tick
+	// Save Pawn Rotation Every Tick
 	FRotator PawnRotation;
 
+	// Save Control Rotation Every Tick
+	FRotator ControlRotation;
+
+	
 
 	/** Functions */
 

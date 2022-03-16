@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "PlayerCar.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Bullet.h"
+
 
 // Sets default values
 AEnemy::AEnemy()
@@ -26,15 +28,13 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// This character will get assigned a controller when we press play , Because its a character
 	AIController = Cast<AAIController>(GetController());
-
-	if (AIController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController Running"));
-	}
 	
+	// Didnt work in Constructor
 	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlap);
 	AttackCollider->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd);
+
 }
 
 // Called every frame
@@ -42,6 +42,18 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bShooting)
+	{
+		ShootClock += DeltaTime;
+		
+		
+		if (ShootClock > ShootTimer)
+		{
+			ShootClock = 0.f;
+
+			GetWorld()->SpawnActor<ABullet>(BulletBP, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorForwardVector().Rotation());
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -59,10 +71,7 @@ void AEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 		UE_LOG(LogTemp, Warning, TEXT("MovingToPlayer"));
 		AIController->MoveToActor(Player, 500.f);
 		AIController->SetFocus(Player);
-		/*if (AIController->GetDistanceTo(Player) < 805.f)
-		{
-
-		}*/
+		bShooting = true;
 	}
 }
 
@@ -73,6 +82,8 @@ void AEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	{
 		AIController->StopMovement();
 		AIController->ClearFocus(EAIFocusPriority::Gameplay);
+		bShooting = false;
+		ShootClock = 0.f;
 	}
 }
 
