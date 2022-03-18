@@ -40,7 +40,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	
+	float LinearDampingDefault = 25.f;
+	float AngularDampingDefault = 8.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HoverVariables")
 	class APlayerCar* PlayerCar;

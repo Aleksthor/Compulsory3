@@ -100,11 +100,37 @@ void APlayerCar::Tick(float DeltaTime)
 		FRotator Yaw = FMath::RInterpTo(PawnRotation, ControlRotation, DeltaTime, 5.f);
 		FRotator UseRotator = PawnRotation;
 
-		FVector ImpactPoints = HoverComponent1->HitResult.ImpactPoint;
-		if (ImpactPoints.IsNearlyZero())
+		FVector ImpactPoints1 = HoverComponent1->HitResult.ImpactPoint;
+		FVector ImpactPoints2 = HoverComponent2->HitResult.ImpactPoint;
+		FVector ImpactPoints3 = HoverComponent3->HitResult.ImpactPoint;
+		FVector ImpactPoints4 = HoverComponent4->HitResult.ImpactPoint;
+		if (ImpactPoints1.IsNearlyZero() && ImpactPoints2.IsNearlyZero() && ImpactPoints3.IsNearlyZero() && ImpactPoints4.IsNearlyZero())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Logging In Air"));
 			UseRotator = FMath::RInterpTo(PawnRotation, FRotator::ZeroRotator, DeltaTime, 5.f);
+			
+			UE_LOG(LogTemp, Warning, TEXT("HoverComponent In Air"));
+			HoverComponent1->LinearDamping = 1.f;
+			HoverComponent2->LinearDamping = 1.f;
+			HoverComponent3->LinearDamping = 1.f;
+			HoverComponent4->LinearDamping = 1.f;
+
+			HoverComponent1->AngularDamping = 1.f;
+			HoverComponent2->AngularDamping = 1.f;
+			HoverComponent3->AngularDamping = 1.f;
+			HoverComponent4->AngularDamping = 1.f;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HoverComponent Default"));
+			HoverComponent1->LinearDamping = HoverComponent1->LinearDampingDefault;
+			HoverComponent2->LinearDamping = HoverComponent2->LinearDampingDefault;
+			HoverComponent3->LinearDamping = HoverComponent3->LinearDampingDefault;
+			HoverComponent4->LinearDamping = HoverComponent4->LinearDampingDefault;
+
+			HoverComponent1->AngularDamping = HoverComponent1->AngularDampingDefault;
+			HoverComponent2->AngularDamping = HoverComponent2->AngularDampingDefault;
+			HoverComponent3->AngularDamping = HoverComponent3->AngularDampingDefault;
+			HoverComponent4->AngularDamping = HoverComponent4->AngularDampingDefault;
 		}
 		SetActorRotation(FRotator(UseRotator.Pitch, Yaw.Yaw, UseRotator.Roll));
 		
@@ -184,10 +210,16 @@ void APlayerCar::StopShooting()
 
 void APlayerCar::Forward(float value)
 {
-	//New for MovementComponent******************************
+	
 	FVector RotationVector = FRotationMatrix(ControlRotation).GetUnitAxis(EAxis::X);
-	FVector Direction = FVector(RotationVector.X, RotationVector.Y, 0.f);
-
+	FVector ZRotation = PawnRotation.Vector();
+	/*FVector Difference = RotationVector - ZRotation;*/
+	FVector Direction = FVector(RotationVector.X, RotationVector.Y, ZRotation.Z);
+	/*float TurnRate{ 0.01f };
+	FVector Direction = FVector(ZRotation.X + FMath::Clamp(Difference.X, -TurnRate, TurnRate),
+		ZRotation.Y + FMath::Clamp(Difference.Y, -TurnRate, TurnRate), ZRotation.Z);
+	Direction.Normalize();
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Direction.ToString());*/
 
 
 	AddMovementInput(Direction, value);

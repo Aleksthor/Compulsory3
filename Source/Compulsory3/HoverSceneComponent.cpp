@@ -16,8 +16,8 @@ UHoverSceneComponent::UHoverSceneComponent()
 	// ...
 	TraceLength = 200.f;
 	HoverForce = 50000.f;
-	LinearDamping = 3.f;
-	AngularDamping = 5.f;
+	LinearDamping = LinearDampingDefault;
+	AngularDamping = AngularDampingDefault;
 }
 
 
@@ -38,6 +38,17 @@ void UHoverSceneComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	//if (HitResult.ImpactPoint.IsNearlyZero())
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Reset Damping"));
+	//	LinearDamping = 1.f;
+	//	AngularDamping = 1.f;
+	//}
+	//else
+	//{
+	//	LinearDamping = LinearDampingDefault;
+	//	AngularDamping = AngularDampingDefault;
+	//}
 
 	if (IsValid(PlayerCar))
 	{
@@ -62,11 +73,9 @@ void UHoverSceneComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			FVector Force = HitResult.ImpactNormal * Lerp;
 
 			Cast<UPrimitiveComponent>(PlayerCar->GetRootComponent())->AddForceAtLocation(Force, WorldLocation);
-			Cast<UPrimitiveComponent>(PlayerCar->GetRootComponent())->SetLinearDamping(LinearDamping);
-			Cast<UPrimitiveComponent>(PlayerCar->GetRootComponent())->SetAngularDamping(AngularDamping);
-			
-			
 		}
+		Cast<UPrimitiveComponent>(PlayerCar->GetRootComponent())->SetLinearDamping(LinearDamping);
+		Cast<UPrimitiveComponent>(PlayerCar->GetRootComponent())->SetAngularDamping(AngularDamping);
 		
 	}
 
