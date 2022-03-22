@@ -95,6 +95,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
 	FString AmmoPack{ "" };
 
+	int AmmoRecieved = 0;
+
 	bool bSetVisibleOnHUD = false;
 	float HUDTimer = 2.f;
 	float HUDClock = 0.f;

@@ -200,7 +200,7 @@ void APlayerCar::Tick(float DeltaTime)
 	if (bSetVisibleOnHUD)
 	{
 		HUDClock += DeltaTime;
-		AmmoPack = "Ammo Recieved";
+		AmmoPack = "Ammo Recieved: " + FString::FromInt(AmmoRecieved);
 		if (HUDClock > HUDTimer)
 		{
 			AmmoPack = "";

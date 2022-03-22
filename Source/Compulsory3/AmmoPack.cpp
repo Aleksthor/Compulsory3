@@ -44,6 +44,7 @@ void AAmmoPack::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	{
 		AmmoGiven = PlayerCar->InitialAmmo;
 		PlayerCar->Ammo += AmmoGiven;
+		PlayerCar->AmmoRecieved = AmmoGiven;
 		PlayerCar->bSetVisibleOnHUD = true;
 		SetActorHiddenInGame(true);
 		SetActorEnableCollision(false);
