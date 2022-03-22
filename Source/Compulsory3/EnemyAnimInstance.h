@@ -14,4 +14,18 @@ class COMPULSORY3_API UEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
+
+public:
+
+
+	virtual void NativeInitializeAnimation() override;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateAnimationProperties();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	class APawn* Pawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float MovementSpeed;
 };

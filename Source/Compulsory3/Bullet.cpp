@@ -3,6 +3,10 @@
 
 #include "Bullet.h"
 #include "Components/SphereComponent.h"
+#include "PlayerCar.h"
+#include "Enemy.h"
+#include "AnimatedEnemy.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -54,17 +58,55 @@ void ABullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 
     if (OtherActor->IsA<ABullet>())
     {
-        UE_LOG(LogTemp, Warning, TEXT("OtherActor->Bullet"));
-        //Cast<ABullet>(OtherActor)->DestroyBullet();
+       
+        Cast<ABullet>(OtherActor)->DestroyBullet(); 
         SetActorHiddenInGame(true);
         SetActorEnableCollision(false);
+        this->Destroy();
     }
+    AEnemy* Enemy = Cast<AEnemy>(OtherActor);
+    if (Enemy)
+    {
+        if (OtherComponent == Enemy->HealthCollider)
+        {
+            SetActorHiddenInGame(true);
+            SetActorEnableCollision(false);
+            this->Destroy();
+        }
+    }
+
+    AAnimatedEnemy* AnimatedEnemy = Cast<AAnimatedEnemy>(OtherActor);
+    if (AnimatedEnemy)
+    {
+        if (OtherComponent == AnimatedEnemy->HealthCollider)
+        {
+            SetActorHiddenInGame(true);
+            SetActorEnableCollision(false);
+            this->Destroy();
+        }
+    }
+    
+    if (OtherActor->IsA<APlayerCar>())
+    {
+        SetActorHiddenInGame(true);
+        SetActorEnableCollision(false);
+        this->Destroy();
+    }
+
+    if (OtherComponent->GetCollisionProfileName() == FName("BlockAll"))
+    {
+        SetActorHiddenInGame(true);
+        SetActorEnableCollision(false);
+        this->Destroy();
+    }
+ 
 }
 
 void ABullet::DestroyBullet()
 {
-    UE_LOG(LogTemp, Warning, TEXT("DestroyBullet"));
+  
     SetActorHiddenInGame(true);
     SetActorEnableCollision(false);
+    this->Destroy();
 }
 

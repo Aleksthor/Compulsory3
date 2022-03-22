@@ -72,6 +72,11 @@ public:
 
 	int InitialAmmo = 30;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	float Health = 100.f;
+
+	float DriftValue;
+
 	// How often we shoot full auto
 	float ShootSpeed = 1.f;
 
@@ -84,7 +89,15 @@ public:
 	// Save Control Rotation Every Tick
 	FRotator ControlRotation;
 
-	
+	// Save Control Rotation Every Tick
+	FRotator NewRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerVariables")
+	FString AmmoPack{ "" };
+
+	bool bSetVisibleOnHUD = false;
+	float HUDTimer = 2.f;
+	float HUDClock = 0.f;
 
 	/** Functions */
 
@@ -109,10 +122,21 @@ private:
 	UFUNCTION()
 	void Right(float value);
 
+	UFUNCTION()
+	void StartDrift();
 
+	UFUNCTION()
+	void StopDrift();
+
+	UFUNCTION()
+	void Reload();
 
 
 	/** Booleans */
 
 	bool bShooting = false;
+
+	bool bDrifting = false;
+
+	bool bRight = false;
 };
